@@ -22,5 +22,5 @@ I started building a semi-autonomous omnidirectional robot as an experimental ro
 
 To see video of the robot in action visit [here](https://www.youtube.com/channel/UCSQE0Ju1SnRpRMVGIcckjnA/videos).
 
-For suggestions, questions or further information about the project, please contact me from baser.kandehir[at]gmail.com
+For suggestions, questions or further information about the project, please contact me from baser.kandehir[at]ieee.metu.edu.tr
 
