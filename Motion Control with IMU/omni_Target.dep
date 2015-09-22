@@ -1,5 +1,5 @@
 Dependencies for Project 'omni', Target 'Target': (DO NOT MODIFY !)
-F (.\main.c)(0x55FD8506)(-c --cpu Cortex-M4.fp -D__EVAL -g -O0 --apcs=interwork -I "D:\IEEE_RAS_BASER\Star project\Programming\Motion Control with IMU\RTE"-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.4.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.0.0\Device\Include\TM4C123-D__UVISION_VERSION="516" -D_RTE_ -DTM4C123GH6PM-o .\main.o --omf_browse .\main.crf --depend .\main.d)
+F (.\main.c)(0x55FD852F)(-c --cpu Cortex-M4.fp -D__EVAL -g -O0 --apcs=interwork -I "D:\IEEE_RAS_BASER\Star project\Programming\Motion Control with IMU\RTE"-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.4.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.0.0\Device\Include\TM4C123-D__UVISION_VERSION="516" -D_RTE_ -DTM4C123GH6PM-o .\main.o --omf_browse .\main.crf --depend .\main.d)
 I (main.h)(0x55EC7542)
 I (tm4c123gh6pm.h)(0x55CE09CC)
 I (PLL.h)(0x5230871C)
