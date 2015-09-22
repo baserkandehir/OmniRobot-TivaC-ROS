@@ -38,12 +38,36 @@ void OmniControl_setSpeedDir(motor_t *ptr, volatile float set_point, bool dir);
   * @input  Vx: Velocity of the robot in x direction (in m/s)
   *         Vy: Velocity of the robot in y direction (in m/s)
   *         Vang: Angular velocity of the robot (in deg/s)
+	*				  theta: Angle between robots frame and world frame
   * @output None
   * @description This function takes translational and angular velocity as input and
   * calculates the corresponding angular velocities of the wheels and gives these values
   * as set_point to the motor PID functions.
+  * Vx_max = 0.63 m/s
+	*	Vy_max = 0.73 m/s
+	*	Vang_max = 276.5 deg/s 
   */
-void OmniControl(float Vx, float Vy, float Vang);
+void OmniControl(float Vx, float Vy, float Vang, float theta);
+
+/** @brief Convert translational and angular velocity of the robot to wheel angular velocities  
+  * @input Vx: Velocity of the robot in x direction 
+  *        Vy: Velocity of the robot in y direction 
+  *        Vang: Angular velocity of the robot 	
+	*        theta: Angle between robots frame and world frame
+	*        *ptr: Pointer to wheel angular velocities
+  * @output None
+  */
+void convertFromRobotVelToMotorVel(float Vx, float Vy, float Vang, float theta, float *ptr);
+
+/** @brief Convert wheel angular velocities to translational and angular velocity of the robot
+  * @input Vx: Velocity of the robot in x direction 
+  *        Vy: Velocity of the robot in y direction 
+  *        Vang: Angular velocity of the robot 	
+	*        theta: Angle between robots frame and world frame
+	*        *ptr: Pointer to wheel angular velocities
+  * @output None
+  */
+void convertFromMotorVelToRobotVel(float *Vx, float *Vy, float *Vang, float theta, float *ptr);
 
 /** @brief  Receive data from ST NUCLEO microcontroller
   * @input  None

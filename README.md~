@@ -2,9 +2,7 @@
 
 **_What does this code do?_**
 
-Moving in a desired direction with respect to world frame even robot is rotated externally 
-
-Previous code: To test the motion control algorithm, robot draws square motion path autonomously and corrects its orientation with respect to the world frame by the data taken from digital compass or gyroscope. 
+To test the motion control algorithm, robot draws square motion path autonomously and corrects its orientation with respect to the world frame by the data taken from digital compass or gyroscope. 
 
 ## General Info
 I started building a semi-autonomous omnidirectional robot as an experimental robotic platform in supervision of Assoc. Prof. Afsar Saranli. This project is one of the Star Projects that are offered this year at METU EEE. For further information check out the [website](http://star.eee.metu.edu.tr/).

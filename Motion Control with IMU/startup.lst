@@ -1089,10 +1089,12 @@ ARM Macro Assembler    Page 17
               00000000 
               00000400 
               00000000 
-Command Line: --debug --xref --cpu=Cortex-M4.fp --apcs=interwork --depend=.\sta
-rtup.d -o.\startup.o -IC:\Keil\ARM\RV31\INC -IC:\Keil\ARM\CMSIS\Include -IC:\Ke
-il\ARM\Inc\TI\TM4C123 --predefine="__EVAL SETA 1" --list=.\startup.lst startup.
-s
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
+erwork --depend=.\startup.d -o.\startup.o -I"D:\IEEE_RAS_BASER\Star project\Pro
+gramming\Motion Control with IMU\RTE" -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\4.4.0\CMS
+IS\Include -IC:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.0.0\Device\Include\TM4C123 --p
+redefine="__EVAL SETA 1" --predefine="__UVISION_VERSION SETA 516" --predefine="
+_RTE_ SETA 1" --predefine="TM4C123GH6PM SETA 1" --list=.\startup.lst startup.s
 
 
 
@@ -2539,4 +2541,4 @@ Symbol: __use_two_region_memory
       None
 Comment: __use_two_region_memory unused
 2 symbols
-481 symbols in table
+484 symbols in table

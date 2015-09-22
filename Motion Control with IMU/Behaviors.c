@@ -56,7 +56,7 @@ void GoToGoal(float d_goal,float fi, float t_d)
 	
 	desired.theta_dot = Kp*(theta_error) + Ki*integral.theta;  
 
-	OmniControl(desired.x_dot, desired.y_dot, desired.theta_dot);
+	OmniControl(desired.x_dot, desired.y_dot, desired.theta_dot, 0);
 
 	if(t_cur < t_d)
 		t_cur += TIMER4_dt;

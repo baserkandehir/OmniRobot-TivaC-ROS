@@ -1,11 +1,11 @@
 .\omnicontrol.o: OmniControl.c
 .\omnicontrol.o: OmniControl.h
-.\omnicontrol.o: C:\Keil\ARM\ARMCC\bin\..\include\stdbool.h
+.\omnicontrol.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 .\omnicontrol.o: OmniStructure.h
 .\omnicontrol.o: MacroDefinitions.h
 .\omnicontrol.o: Timers.h
 .\omnicontrol.o: PID.h
-.\omnicontrol.o: C:\Keil\ARM\ARMCC\bin\..\include\math.h
+.\omnicontrol.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 .\omnicontrol.o: MotorControl.h
 .\omnicontrol.o: UART.h
 .\omnicontrol.o: tm4c123gh6pm.h

@@ -52,15 +52,12 @@ void Timer3_Task(void)
 }
 
 void Timer4_Task(void)	
-{
+{/*
 	GoToGoal(d_goal, fi, t_d);	
-
-	/* Calculate position of the robot with respect to its starting point in meters */
-	positionX = wheel_disp[1]*(-0.667f) + wheel_disp[0]*(0.333f) + wheel_disp[2]*(0.333f);
-	positionY = wheel_disp[0]*(0.577f) + wheel_disp[2]*(-0.577f);
+*/
 	
-	/* Position of theta with respect to its starting point in degrees */
-	positionTheta = (wheel_disp[0] + wheel_disp[1] + wheel_disp[2]) / (3*L) * RAD_TO_DEG;
+	/* Calculate pose of the robot with respect to its starting point where position is in meters and theta is in deg/s */
+	convertFromMotorVelToRobotVel(&positionX, &positionY, &positionTheta, THETA, wheel_disp);
 }
 
 /** @brief  Timer initializations for PID loops
@@ -92,6 +89,7 @@ void OmniControl_setSpeedDir(motor_t *ptr, volatile float set_point, bool dir)
   * @input  Vx: Velocity of the robot in x direction (in m/s)
   *         Vy: Velocity of the robot in y direction (in m/s)
   *         Vang: Angular velocity of the robot (in deg/s)
+	*				  theta: Angle between robots frame and world frame
   * @output None
   * @description This function takes translational and angular velocity as input and
   * calculates the corresponding angular velocities of the wheels and gives these values
@@ -100,24 +98,17 @@ void OmniControl_setSpeedDir(motor_t *ptr, volatile float set_point, bool dir)
 	*	Vy_max = 0.73 m/s
 	*	Vang_max = 276.5 deg/s 
   */
-void OmniControl(float Vx, float Vy, float Vang)
+void OmniControl(float Vx, float Vy, float Vang, float theta)
 {               
 	float w[3] = {0, 0, 0};           // angular velocity of each wheel
  	static bool dir[3] = {0, 0, 0};   // direction of rotation of each wheel
 	unsigned long i;
 	float maxAng;
-	float L_correction = 0.93, corrected_L; // 
-	
-	/* Correction of L according to angular velocity observations */
-	corrected_L = L * L_correction;
 	
 	/* Conversion of Vang from deg/s to rad/sec */
 	Vang /= RAD_TO_DEG;
 	
-	/* Convert translational and angular velocity of the robot to wheel angular velocities */
-	w[1] = (-1.0f * Vx + 0      * Vy + corrected_L * Vang) / R;  
-	w[2] = (0.5f  * Vx - 0.866f * Vy + corrected_L * Vang) / R;
-	w[0] = (0.5f  * Vx + 0.866f * Vy + corrected_L * Vang) / R;
+	convertFromRobotVelToMotorVel(Vx, Vy, Vang, THETA+theta, w); 
 	
 	/* Conversion from rad/sec to rev/min */
 	for(i = 0; i < 3; i++)
@@ -142,6 +133,40 @@ void OmniControl(float Vx, float Vy, float Vang)
 		}
 		OmniControl_setSpeedDir(&motor[i], w[i], dir[i]);
 	}
+}
+
+/** @brief Convert translational and angular velocity of the robot to wheel angular velocities  
+  * @input Vx: Velocity of the robot in x direction 
+  *        Vy: Velocity of the robot in y direction 
+  *        Vang: Angular velocity of the robot 	
+	*        theta: Angle between robots frame and world frame
+	*        *ptr: Pointer to wheel angular velocities
+  * @output None
+  */
+void convertFromRobotVelToMotorVel(float Vx, float Vy, float Vang, float theta, float *ptr)
+{
+	theta = theta / RAD_TO_DEG;
+	
+	ptr[1] = (-sinf(theta)        * Vx + cosf(theta)         * Vy + L * Vang) / R;  
+	ptr[2] = (-sinf(PI/3 - theta) * Vx - cosf(PI/3 - theta)  * Vy + L * Vang) / R;
+	ptr[0] = (sinf(PI/3 + theta)  * Vx + -cosf(PI/3 + theta) * Vy + L * Vang) / R;
+}
+
+/** @brief Convert wheel angular velocities to translational and angular velocity of the robot
+  * @input Vx: Velocity of the robot in x direction 
+  *        Vy: Velocity of the robot in y direction 
+  *        Vang: Angular velocity of the robot 	
+	*        theta: Angle between robots frame and world frame
+	*        *ptr: Pointer to wheel angular velocities
+  * @output None
+  */
+void convertFromMotorVelToRobotVel(float *Vx, float *Vy, float *Vang, float theta, float *ptr)
+{
+	theta = theta / RAD_TO_DEG;
+	
+	*Vx = (-0.667f)*sinf(theta) * ptr[1] + (-0.667f)*sinf(PI/3 - theta) * ptr[2] + (0.667f)*sinf(PI/3 + theta) * ptr[0];
+	*Vy = (0.667f)*cosf(theta)  * ptr[1] + (-0.667f)*cosf(PI/3 - theta) * ptr[2] + (-0.667f)*cosf(PI/3 + theta)* ptr[0];                  
+	*Vang = (ptr[1] + ptr[2] + ptr[0]) / (3*L) * RAD_TO_DEG;
 }
 
 /** @brief  Receive data from ST NUCLEO microcontroller
@@ -170,23 +195,23 @@ void OmniControl_getData(void)
 	
 	switch(incoming_data)
 	{
-		case 'F': OmniControl(speed, 0, 0);       // go forward
+		case 'F': OmniControl(speed, 0, 0, 0);       // go forward
 			break;
-		case 'B': OmniControl((-1)*speed, 0, 0);  // go backward
+		case 'B': OmniControl((-1)*speed, 0, 0, 0);  // go backward
 			break;
-		case 'L': OmniControl(0, (-1)*speed, 0);  // go left
+		case 'L': OmniControl(0, (-1)*speed, 0, 0);  // go left
 			break;
-		case 'R': OmniControl(0, speed, 0);       // go right
+		case 'R': OmniControl(0, speed, 0, 0);       // go right
 			break;
 		
 		case 'G': 
-		case 'H': OmniControl(0, 0, (-1)*speed/L);   // turn around in anti-clockwise direction
+		case 'H': OmniControl(0, 0, (-1)*speed/L, 0);   // turn around in anti-clockwise direction
 			break;
 		case 'I': 
-		case 'J': OmniControl(0, 0, speed/L);        // turn around in clockwise direction	
+		case 'J': OmniControl(0, 0, speed/L, 0);        // turn around in clockwise direction	
 			break;
 		
-		case 'S': OmniControl(0, 0, 0); // stop
+		case 'S': OmniControl(0, 0, 0, 0); // stop
 			break;
 	}
 }
