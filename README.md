@@ -1,13 +1,7 @@
 # Omnidirectional-Robot-Project
 
-**_What does this code do?_**
-
-Moving in a desired direction with respect to world frame even robot is rotated externally 
-
-Previous code: To test the motion control algorithm, robot draws square motion path autonomously and corrects its orientation with respect to the world frame by the data taken from digital compass or gyroscope. 
-
 ## General Info
-I started building a semi-autonomous omnidirectional robot as an experimental robotic platform in supervision of Assoc. Prof. Afsar Saranli. This project is one of the Star Projects that are offered this year at METU EEE. For further information check out the [website](http://star.eee.metu.edu.tr/).
+I have started building a semi-autonomous omnidirectional robot as an experimental robotic platform in supervision of Assoc. Prof. Afsar Saranli. I am building this project as a Star Project at METU EEE. For further information check out the [website](http://star.eee.metu.edu.tr/).
 
 ## Current Features
 * Can move in a desired direction
@@ -21,6 +15,7 @@ I started building a semi-autonomous omnidirectional robot as an experimental ro
 * PID control algorithm is applied to all three motors to control their speed and robots position
 * Body: Made out of aliminium
 * 10-DOF IMU is used for heading information
+* 2x HC-SR04 Ultrasonic sensors
 
 To see video of the robot in action visit [here](https://www.youtube.com/channel/UCSQE0Ju1SnRpRMVGIcckjnA/videos).
 
