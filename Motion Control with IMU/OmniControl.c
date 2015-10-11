@@ -5,6 +5,7 @@
 #include "UART.h" 
 #include "SysTick.h" 
 #include "Behaviors.h"
+#include "Ultrasonic.h" 
 
 motor_t motor[3];                            // initially, compiler clears all the variables to 0 
 volatile unsigned long time[3] = {0, 0, 0};  // Variables to reduce period to zero when motors are not rotating
@@ -55,6 +56,9 @@ void Timer4_Task(void)
 {/*
 	GoToGoal(d_goal, fi, t_d);	
 */
+	
+	Ultrasonic1_sendTrigger();
+	Ultrasonic2_sendTrigger();
 	
 	/* Calculate pose of the robot with respect to its starting point where position is in meters and theta is in deg/s */
 	convertFromMotorVelToRobotVel(&positionX, &positionY, &positionTheta, THETA, wheel_disp);

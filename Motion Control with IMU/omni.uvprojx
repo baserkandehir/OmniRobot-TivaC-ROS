@@ -477,14 +477,19 @@
               <FilePath>.\Encoders.c</FilePath>
             </File>
             <File>
+              <FileName>Behaviors.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Behaviors.c</FilePath>
+            </File>
+            <File>
               <FileName>OmniControl.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\OmniControl.c</FilePath>
             </File>
             <File>
-              <FileName>Behaviors.c</FileName>
+              <FileName>Ultrasonic.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Behaviors.c</FilePath>
+              <FilePath>.\Ultrasonic.c</FilePath>
             </File>
           </Files>
         </Group>

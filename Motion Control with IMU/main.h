@@ -16,6 +16,7 @@
 #include "OmniControl.h"      // omnidirectional robot control function
 #include "MacroDefinitions.h" // macros are defined in this file
 #include "Behaviors.h"        // various behaviors are defined
+#include "Ultrasonic.h"       // ultrasonic sensor functions
 
 #include <stdbool.h>          // included to use boolean data type
 #include <math.h>             // standard C math library

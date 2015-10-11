@@ -50,6 +50,18 @@ void EdgeInterrupts_PB7_Init(void);
   */
 void EdgeInterrupts_PD7_Init(void);
 
+/** @brief  PB5 interrupt initialization on both edges
+  * @input  None
+  * @output None
+  */
+void EdgeInterrupts_PB5_Init(void);
+
+/** @brief  PE0 interrupt initialization on both edges
+  * @input  None
+  * @output None
+  */
+void EdgeInterrupts_PE0_Init(void);
+
 /* Interrupt handlers */
 void GPIOPortB_Handler(void);     
 void GPIOPortD_Handler(void);    
@@ -59,6 +71,8 @@ void GPIOPortE_Handler(void);
 void GPIOPortB_Task(void);
 void GPIOPortD_Task(void);
 void GPIOPortE_Task(void);
+void GPIOPortB_UltrasonicTask(void);
+void GPIOPortE_UltrasonicTask(void);
 
 /* Functions that are defined in startup.s file */
 void DisableInterrupts(void); // Disable interrupts

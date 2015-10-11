@@ -20,7 +20,9 @@ void EdgeInterrupts_Init(void)
 	EdgeInterrupts_PB4_Init();
 	EdgeInterrupts_PB7_Init();
 	EdgeInterrupts_PD7_Init();
-
+	EdgeInterrupts_PE0_Init();
+	EdgeInterrupts_PB5_Init();
+	
 	EnableInterrupts();   // Clears the I bit 
 }
 
@@ -164,9 +166,56 @@ void EdgeInterrupts_PD7_Init(void)
 	NVIC_EN0_R|= 0x00000008;               // enable interrupt 3 in NVIC (GPIO PORTD: Interrupt number: 3)
 }
 
+/** @brief  PB5 interrupt initialization on both edges
+  * @input  None
+  * @output None
+  */
+void EdgeInterrupts_PB5_Init(void)
+{
+	unsigned long volatile delay;
+	SYSCTL_RCGC2_R|=0x00000002;            // activate clock for port B
+	delay=SYSCTL_RCGC2_R;                  // dummy delay
+	GPIO_PORTB_DIR_R&=~0x20;               // make PB5 input
+	GPIO_PORTB_AFSEL_R&=~0x20;             // disable alt funct on PB5
+	GPIO_PORTB_DEN_R|=0x20;                // enable digital I/O on PB5   
+	GPIO_PORTB_PCTL_R&=~0x00F00000;        // configure PB5 as GPIO
+	GPIO_PORTB_AMSEL_R= 0;                 // disable analog functionality on PB
+	GPIO_PORTB_PUR_R|=0x20;                // enable weak pull-up on PB5
+	GPIO_PORTB_IS_R&=~0x20;                // PB5 is edge-sensitive
+	GPIO_PORTB_IBE_R|=0x20;                // PB5 is both edges
+	GPIO_PORTB_ICR_R|=0x20;                // clear flag5
+	GPIO_PORTB_IM_R|=0x20;                 // arm interrupt on PB5
+	NVIC_PRI0_R = (NVIC_PRI0_R&0xFFFF00FF)|0x00006000; // priority 3
+	NVIC_EN0_R|= 0x00000002;               // enable interrupt 1 in NVIC (GPIO PORTB: Interrupt number: 1)
+}
+
+/** @brief  PE0 interrupt initialization on both edges
+  * @input  None
+  * @output None
+  */
+void EdgeInterrupts_PE0_Init(void)
+{
+	unsigned long volatile delay;
+	SYSCTL_RCGC2_R|=0x00000010;            // activate clock for port E
+  delay=SYSCTL_RCGC2_R;                  // dummy delay
+	GPIO_PORTE_DIR_R&=~0x01;               // make PE0 input
+	GPIO_PORTE_AFSEL_R&=~0x01;             // disable alt funct on PE0
+	GPIO_PORTE_DEN_R|=0x01;                // enable digital I/O on PE0   
+	GPIO_PORTE_PCTL_R&=~0x0000000F;        // configure PE0 as GPIO
+	GPIO_PORTE_AMSEL_R= 0;                 // disable analog functionality on PE
+	GPIO_PORTE_PUR_R|=0x01;                // enable weak pull-up on PE0
+	GPIO_PORTE_IS_R&=~0x01;                // PE0 is edge-sensitive
+	GPIO_PORTE_IBE_R|=0x01;                // PE0 is both edges
+	GPIO_PORTE_ICR_R|=0x01;                // clear flag0
+	GPIO_PORTE_IM_R|=0x01;                 // arm interrupt on PE0
+	NVIC_PRI1_R = (NVIC_PRI1_R&0xFFFFFF00)|0x00000060; // priority 3
+  NVIC_EN0_R|= 0x00000010;               // enable interrupt 4 in NVIC (GPIO PORTE: Interrupt number: 4)
+}
+
 void GPIOPortB_Handler(void)     
 {
 	GPIOPortB_Task();
+	GPIOPortB_UltrasonicTask();
 }
 
 void GPIOPortD_Handler(void)     
@@ -177,4 +226,5 @@ void GPIOPortD_Handler(void)
 void GPIOPortE_Handler(void)     
 {
 	GPIOPortE_Task();
+	GPIOPortE_UltrasonicTask();
 }

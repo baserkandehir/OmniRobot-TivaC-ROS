@@ -12,3 +12,4 @@
 .\omnicontrol.o: UART.h
 .\omnicontrol.o: SysTick.h
 .\omnicontrol.o: Behaviors.h
+.\omnicontrol.o: Ultrasonic.h

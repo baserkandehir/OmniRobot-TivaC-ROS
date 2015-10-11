@@ -128,7 +128,10 @@ void GPIOPortD_Task(void)
 
 void GPIOPortE_Task(void) // enc2 CHA interrupt     
 {
-	GPIO_PORTE_ICR_R |= ENC2_CHA;   // acknowledge flag	
-	getEncoderData(GPIO_PORTB_DATA_R, ENC2_CHB, GPIO_PORTE_DATA_R, ENC2_CHA, &motor[1], 1);
-	time[1] = Counts;
+	if(GPIO_PORTE_RIS_R & ENC2_CHA)
+	{
+		GPIO_PORTE_ICR_R |= ENC2_CHA;   // acknowledge flag	
+		getEncoderData(GPIO_PORTB_DATA_R, ENC2_CHB, GPIO_PORTE_DATA_R, ENC2_CHA, &motor[1], 1);
+		time[1] = Counts;
+	}
 }      
