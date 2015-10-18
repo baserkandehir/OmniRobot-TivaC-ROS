@@ -180,7 +180,7 @@ void EdgeInterrupts_PB5_Init(void)
 	GPIO_PORTB_DEN_R|=0x20;                // enable digital I/O on PB5   
 	GPIO_PORTB_PCTL_R&=~0x00F00000;        // configure PB5 as GPIO
 	GPIO_PORTB_AMSEL_R= 0;                 // disable analog functionality on PB
-	GPIO_PORTB_PUR_R|=0x20;                // enable weak pull-up on PB5
+	GPIO_PORTB_PDR_R|=0x20;                // enable weak pull-down on PB5
 	GPIO_PORTB_IS_R&=~0x20;                // PB5 is edge-sensitive
 	GPIO_PORTB_IBE_R|=0x20;                // PB5 is both edges
 	GPIO_PORTB_ICR_R|=0x20;                // clear flag5
@@ -203,7 +203,7 @@ void EdgeInterrupts_PE0_Init(void)
 	GPIO_PORTE_DEN_R|=0x01;                // enable digital I/O on PE0   
 	GPIO_PORTE_PCTL_R&=~0x0000000F;        // configure PE0 as GPIO
 	GPIO_PORTE_AMSEL_R= 0;                 // disable analog functionality on PE
-	GPIO_PORTE_PUR_R|=0x01;                // enable weak pull-up on PE0
+	GPIO_PORTE_PDR_R|=0x01;                // enable weak pull-down on PE0
 	GPIO_PORTE_IS_R&=~0x01;                // PE0 is edge-sensitive
 	GPIO_PORTE_IBE_R|=0x01;                // PE0 is both edges
 	GPIO_PORTE_ICR_R|=0x01;                // clear flag0

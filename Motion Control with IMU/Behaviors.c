@@ -1,5 +1,6 @@
 #include "Behaviors.h"
 #include "OmniControl.h"
+#include "Ultrasonic.h"
 
 state_t initial = {0, 0, 0}; // initial state of the robot
 state_t final;               // goal state of the robot
@@ -15,6 +16,9 @@ float angle_change = 0;
 extern volatile float heading;
 extern float positionX, positionY, positionTheta; 
 extern float wheel_disp[3]; 
+
+pid_t wall;  // variable to be used in wall following function
+extern ultrasonic_t ult1,ult2;
 
 /** @brief  Go to goal behavior from initial point to final point
   * @input  d_goal: Distance to the goal in meters
@@ -61,3 +65,25 @@ void GoToGoal(float d_goal,float fi, float t_d)
 	if(t_cur < t_d)
 		t_cur += TIMER4_dt;
 }
+
+void FollowWall(direction_t dir)
+{
+	float Speed_X = 0.2;        // max speed in x direction in m/s
+	float maxAngSpeed = 60;  // max ang speed in deg/s
+	wall.Kp=20;
+	wall.Kd=0;
+	wall.set_point=10;    // x cm away from the wall
+		
+	wall.proportional = wall.set_point - ult2.dist;
+	wall.derivative = wall.proportional - wall.last_proportional;
+	wall.last_proportional = wall.proportional;
+	wall.error = wall.Kp*wall.proportional + wall.Kd*wall.derivative; 
+	
+	if(wall.error > maxAngSpeed)  wall.error = maxAngSpeed;
+	if(wall.error < (-1)*maxAngSpeed) wall.error = (-1)*maxAngSpeed;
+	
+	(dir == left) ? OmniControl(Speed_X,0,wall.error,0) : OmniControl((-1)*Speed_X,0,(-1)*wall.error,0);
+}
+
+
+

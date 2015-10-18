@@ -21,7 +21,7 @@ ultrasonic_t ult1,ult2;
 void Ultrasonic1_Init(void)
 {
    volatile unsigned long delay;
-   SYSCTL_RCGC2_R|=0x00000012;            // activate clock for Port B and Port E 
+   SYSCTL_RCGC2_R|=0x0000001A;            // activate clock for Port B, Port D and Port E 
    delay=SYSCTL_RCGC2_R;                  // dummy delay
    
    /* Make PB2 OUTPUT */
@@ -33,6 +33,18 @@ void Ultrasonic1_Init(void)
    GPIO_PORTB_DEN_R|=0x04;                // enable digital I/0 for PB2 
    
    /* PE0 has already been configured as edge interrupt in EdgeInterrupts_PE0_Init() function */
+	
+	/* Make PD1 OUTPUT (For power cycling) */
+	GPIO_PORTD_CR_R|=0x02;                 // allow changes to PD1
+	GPIO_PORTD_AMSEL_R&=~0x02;             // disable analog func for PD1      
+	GPIO_PORTD_PCTL_R&=~0x00000010;        // no alternative func    
+	GPIO_PORTD_DIR_R|=0x02;                // make PD1 output
+	GPIO_PORTD_AFSEL_R&=~0x02;             // not alternative func   
+	GPIO_PORTD_DEN_R|=0x02;                // enable digital I/0 for PD1 
+	
+	GPIO_PORTD_DATA_R |= 0x02; // ultrasonic sensor is initially off
+	
+	ult1.done = 1;  // to start sensor measurements for the first time
 }
 
 /** @brief  This routine intitializes HC-SR04 ultrasonic sensor2
@@ -42,7 +54,7 @@ void Ultrasonic1_Init(void)
 void Ultrasonic2_Init(void)
 {
 	volatile unsigned long delay;
-	SYSCTL_RCGC2_R|=0x00000012;            // activate clock for Port B and Port E 
+	SYSCTL_RCGC2_R|=0x0000001A;            // activate clock for Port B, Port D and Port E 
 	delay=SYSCTL_RCGC2_R;                  // dummy delay
 	 
 	/* Make PE4 OUTPUT */
@@ -54,6 +66,18 @@ void Ultrasonic2_Init(void)
 	GPIO_PORTE_DEN_R|=0x10;                // enable digital I/O on PE4
 	 
 	/* PB5 has already been configured as edge interrupt in EdgeInterrupts_PB5_Init() function */
+	
+	/* Make PD0 OUTPUT (For power cycling) */
+	GPIO_PORTD_CR_R|=0x01;                 // allow changes to PD0   
+	GPIO_PORTD_AMSEL_R&=~0x01;             // disable analog func for PD0      
+	GPIO_PORTD_PCTL_R&=~0x00000001;        // no alternative func    
+	GPIO_PORTD_DIR_R|=0x01;                // make PD0 output 
+	GPIO_PORTD_AFSEL_R&=~0x01;             // not alternative func   
+	GPIO_PORTD_DEN_R|=0x01;                // enable digital I/0 for PD0 
+	
+	GPIO_PORTD_DATA_R |= 0x01; // ultrasonic sensor is initially off
+	
+	ult2.done = 1;  // to start sensor measurements for the first time
 }
 
 /** @brief  Send trigger to activate first ultrasonic sensor for distance measuring
@@ -101,7 +125,7 @@ void GPIOPortB_UltrasonicTask(void)
 {
 	if(GPIO_PORTB_RIS_R & GPIO_PORTB_PB5_M)    // PB5 interrupt occurred
 	{
-		GPIO_PORTB_ICR_R |= GPIO_PORTB_PB5_M ;   // ack flag5
+		GPIO_PORTB_ICR_R |= GPIO_PORTB_PB5_M;    // ack flag5
 		ult2.flag++;
 		
 		if(GPIO_PORTB_DATA_R & GPIO_PORTB_PB5_M) // if PB5 is high
@@ -117,6 +141,8 @@ void GPIOPortB_UltrasonicTask(void)
 			ult2.change = (ult2.second_time - ult2.first_time) / 1000.0;  // time change in ms
 			ult2.dist = (ult2.second_time - ult2.first_time) / 58.82;     // calculate distance in cm
 			ult2.distMeasure = 0;
+			ult2.done = 1;         // measurement is completed
+			if(ult2.dist > 50) ult2.dist = 50; // if the distance is greater than 50 cm, make it 50 to prevent unwanted wall following behavior.
 		}
 	}
 }
@@ -132,7 +158,7 @@ void GPIOPortE_UltrasonicTask(void)
 { 
 	if(GPIO_PORTE_RIS_R & GPIO_PORTE_PE0_M)    // PE0 interrupt occurred
 	{
-		GPIO_PORTE_ICR_R |= GPIO_PORTE_PE0_M ;   // ack flag0
+		GPIO_PORTE_ICR_R |= GPIO_PORTE_PE0_M;    // ack flag0
 		ult1.flag++;
 		
 		if(GPIO_PORTE_DATA_R & GPIO_PORTE_PE0_M) // if PE0 is high
@@ -148,6 +174,36 @@ void GPIOPortE_UltrasonicTask(void)
 			ult1.change = (ult1.second_time - ult1.first_time) / 1000.0; // time change in ms
 			ult1.dist = (ult1.second_time - ult1.first_time) / 58.82;    // calculate distance in cm
 			ult1.distMeasure = 0;
+			ult1.done = 1;         // measurement is completed
+			if(ult1.dist > 50) ult1.dist = 50; // if the distance is greater than 50 cm, make it 50 to prevent unwanted wall following behavior.
 		}
 	} 
 }
+
+/** @brief  This routine controls ultrasonic sensor1's power
+  * @input  on: Determines if ultrasonic sensor is on or off
+  * @output None
+  * @description This routine is neccessary because HC-SR04 is lack of timeout and echo stucks at high after some time.
+  */
+void Ultrasonic1_power(bool on)
+{
+	if(on)
+		GPIO_PORTD_DATA_R &= ~0x02;
+	else
+		GPIO_PORTD_DATA_R |= 0x02;
+}
+
+
+/** @brief  This routine controls ultrasonic sensor2's power
+  * @input  on: Determines if ultrasonic sensor is on or off
+  * @output None
+  * @description This routine is neccessary because HC-SR04 is lack of timeout and echo stucks at high after some time.
+  */
+void Ultrasonic2_power(bool on)
+{
+	if(on)
+		GPIO_PORTD_DATA_R &= ~0x01;
+	else
+		GPIO_PORTD_DATA_R |= 0x01;
+}
+

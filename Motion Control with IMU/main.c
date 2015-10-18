@@ -15,6 +15,6 @@ int main()
 
 	while(1)
 	{
-		OmniControl(0, 0, 15, 0);
-	}	
+	
+	}	 
 }

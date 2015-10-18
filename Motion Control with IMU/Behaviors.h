@@ -6,6 +6,11 @@
 #include <stdbool.h>   
 #include <math.h>  
 
+typedef enum 
+{ left, 
+	right
+}direction_t;
+
 /** @brief  Go to goal behavior from initial point to final point
   * @input  d_goal: Distance to the goal in meters
   *         fi: Angle of direction of robot
@@ -13,5 +18,7 @@
   * @output None
   */
 void GoToGoal(float d_goal,float fi, float t_d);
+
+void FollowWall(direction_t dir);
 
 #endif /* BEHAVIORS_H */

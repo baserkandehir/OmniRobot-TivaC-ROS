@@ -9,9 +9,10 @@ typedef volatile struct
 {
 	float dist;        // distance measured from ultrasonic sensor
 	float change;      // total echo high time in ms
-	unsigned long long first_time, second_time;
+	unsigned long long first_time, second_time, high_time;
 	unsigned long flag;
 	bool distMeasure;  
+	bool done;         // true after distance measurement completed
 }ultrasonic_t;
 
 /** @brief  This routine intitializes HC-SR04 ultrasonic sensor1
@@ -65,5 +66,19 @@ void GPIOPortB_UltrasonicTask(void);
 	* Therefore distance(cm)=time(us)/58.82;
   */
 void GPIOPortE_UltrasonicTask(void);
+
+/** @brief  This routine controls ultrasonic sensor1's power
+  * @input  on: Determines if ultrasonic sensor is on or off
+  * @output None
+  * @description This routine is neccessary because HC-SR04 is lack of timeout and echo stucks at high after some time.
+  */
+void Ultrasonic1_power(bool on);
+
+/** @brief  This routine controls ultrasonic sensor2's power
+  * @input  on: Determines if ultrasonic sensor is on or off
+  * @output None
+  * @description This routine is neccessary because HC-SR04 is lack of timeout and echo stucks at high after some time.
+  */
+void Ultrasonic2_power(bool on);
 
 #endif /* ULTRASONIC_H */ 

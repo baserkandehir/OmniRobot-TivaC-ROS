@@ -14,6 +14,8 @@ float wheel_disp[3] = {0,0,0};               // total displacement made by wheel
 float positionX = 0, positionY = 0, positionTheta = 0;
 
 float d_goal, fi, t_d;
+extern ultrasonic_t ult1,ult2;
+unsigned long timerCount = 0;
 
 float maxFunc(float x, float y)
 {
@@ -57,8 +59,31 @@ void Timer4_Task(void)
 	GoToGoal(d_goal, fi, t_d);	
 */
 	
-	Ultrasonic1_sendTrigger();
-	Ultrasonic2_sendTrigger();
+	FollowWall(left);
+	
+	/* Ultrasonic Distance Calculation */
+	if(timerCount%4 == 0)      // if 24 ms has passed (this timing is important for proper measurement)
+	{
+		if(ult2.done == 1)            // if second ultrasonic sensor calculated distance
+		{
+			ult2.done = 0;
+			Ultrasonic1_sendTrigger();  // activate first ultrasonic 
+		}
+		else if(ult1.done == 1)       // if first ultrasonic sensor calculated distance
+		{	
+			ult1.done = 0;
+			Ultrasonic2_sendTrigger();  // activate second ultrasonic
+		}
+	}
+	timerCount++;
+
+	if(timerCount%50 == 0)
+	{
+		Ultrasonic1_power(0);
+		Ultrasonic2_power(0);
+		Ultrasonic1_power(1);
+		Ultrasonic2_power(1);
+	}
 	
 	/* Calculate pose of the robot with respect to its starting point where position is in meters and theta is in deg/s */
 	convertFromMotorVelToRobotVel(&positionX, &positionY, &positionTheta, THETA, wheel_disp);
@@ -188,14 +213,21 @@ void OmniControl_getData(void)
 	unsigned char incoming_data = 0;
 	static float speed = 0;  // previous speed value will be used in OmniControl func.
 	
-	received_data = Receive_Long();
+	//received_data = Receive_Long();
 	incoming_data = (received_data % 256);
 	heading = ((received_data - incoming_data) >> 8 ) / 10.0;
 	heading = heading - 180;
 	
+	if((UART4_FR_R&0x10) == 0) // Wait for RXFE to be zero. If it is zero, that means FIFO is not empty so we can read data from FIFO.
+		incoming_data = UART4_DR_R&0xFF;
+	
 	/* Adjust the speed	*/
 	if((incoming_data >= '0') && (incoming_data <= '9'))
+	{
 		speed = (incoming_data - '0') / 9.0 * MAX_SPEED * R;
+		speed = speed / 10.0;
+	}
+	
 	
 	switch(incoming_data)
 	{
@@ -209,10 +241,10 @@ void OmniControl_getData(void)
 			break;
 		
 		case 'G': 
-		case 'H': OmniControl(0, 0, (-1)*speed/L, 0);   // turn around in anti-clockwise direction
+		case 'H': OmniControl(0, 0, (-1)*speed/L * 60, 0);   // turn around in anti-clockwise direction
 			break;
 		case 'I': 
-		case 'J': OmniControl(0, 0, speed/L, 0);        // turn around in clockwise direction	
+		case 'J': OmniControl(0, 0, speed/L * 60, 0);        // turn around in clockwise direction	
 			break;
 		
 		case 'S': OmniControl(0, 0, 0, 0); // stop
