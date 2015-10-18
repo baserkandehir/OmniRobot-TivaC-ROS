@@ -56,7 +56,7 @@ Section Cross References
     behaviors.o(.text) refers to omnicontrol.o(.data) for heading
     behaviors.o(.text) refers to behaviors.o(.bss) for initial
     behaviors.o(.text) refers to omnicontrol.o(.bss) for wheel_disp
-    behaviors.o(.text) refers to ultrasonic.o(.bss) for ult2
+    behaviors.o(.text) refers to ultrasonic.o(.bss) for ult1
     omnicontrol.o(.text) refers to pid.o(.text) for PID
     omnicontrol.o(.text) refers to sinf.o(i.__hardfp_sinf) for __hardfp_sinf
     omnicontrol.o(.text) refers to cosf.o(i.__hardfp_cosf) for __hardfp_cosf

@@ -66,6 +66,10 @@ void GoToGoal(float d_goal,float fi, float t_d)
 		t_cur += TIMER4_dt;
 }
 
+/** @brief  Wall following behavior
+  * @input  dir: The direction of wall following
+  * @output None
+  */
 void FollowWall(direction_t dir)
 {
 	float Speed_X = 0.2;        // max speed in x direction in m/s
@@ -74,7 +78,7 @@ void FollowWall(direction_t dir)
 	wall.Kd=0;
 	wall.set_point=10;    // x cm away from the wall
 		
-	wall.proportional = wall.set_point - ult2.dist;
+	wall.proportional = wall.set_point - ult1.dist;
 	wall.derivative = wall.proportional - wall.last_proportional;
 	wall.last_proportional = wall.proportional;
 	wall.error = wall.Kp*wall.proportional + wall.Kd*wall.derivative; 
@@ -84,6 +88,4 @@ void FollowWall(direction_t dir)
 	
 	(dir == left) ? OmniControl(Speed_X,0,wall.error,0) : OmniControl((-1)*Speed_X,0,(-1)*wall.error,0);
 }
-
-
 

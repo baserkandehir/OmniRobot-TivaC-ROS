@@ -19,6 +19,10 @@ typedef enum
   */
 void GoToGoal(float d_goal,float fi, float t_d);
 
+/** @brief  Wall following behavior
+  * @input  dir: The direction of wall following
+  * @output None
+  */
 void FollowWall(direction_t dir);
 
 #endif /* BEHAVIORS_H */

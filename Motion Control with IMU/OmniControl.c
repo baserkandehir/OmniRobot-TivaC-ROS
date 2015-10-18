@@ -59,7 +59,7 @@ void Timer4_Task(void)
 	GoToGoal(d_goal, fi, t_d);	
 */
 	
-	FollowWall(left);
+	FollowWall(right);
 	
 	/* Ultrasonic Distance Calculation */
 	if(timerCount%4 == 0)      // if 24 ms has passed (this timing is important for proper measurement)
@@ -77,7 +77,7 @@ void Timer4_Task(void)
 	}
 	timerCount++;
 
-	if(timerCount%50 == 0)
+	if(timerCount%50 == 0) // power cycle ultrasonic sensors every 300ms
 	{
 		Ultrasonic1_power(0);
 		Ultrasonic2_power(0);
