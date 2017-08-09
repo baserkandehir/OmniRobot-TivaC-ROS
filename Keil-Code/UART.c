@@ -12,8 +12,8 @@ void UART_Init(void)
 	SYSCTL_RCGCUART_R|=0x00000010 ;  // activate UART4 for Pin C4(receiver) and C5(transmitter)
 	SYSCTL_RCGC2_R|=0x00000004;      // activate clock for Port C
 	UART4_CTL_R&=~0x00000001;        // disable UART
-	UART4_IBRD_R=520;                 // IBRD=int(80000000/(16*9600))=int(520,83)
-	UART4_FBRD_R=54;                 // FBRD=int(64*0.83+0.5)=53.62
+	UART4_IBRD_R=43;                 // IBRD=int(80000000/(16*9600))=int(43.40)
+	UART4_FBRD_R=26;                 // FBRD=int(64*0.40+0.5)=26.1
 	UART4_LCRH_R|=0x70;              // 8 bit word length (no parity bits, one stop bit, FIFOs)
 	UART4_CTL_R|=0x00000001;         // enable UART
 	
@@ -44,7 +44,6 @@ void Transmit_Char(unsigned char data)
 	 UART4_DR_R = data;
 }
 
-
 /** @brief  Send unsigned long data			
   * @input  32-bit data to be transferred
   * @output None
@@ -54,7 +53,10 @@ void Transmit_Long(unsigned long data)
 	unsigned long count=0;
 	unsigned long buffer[100]={0};
 	
-	while(data>0)
+	if (data == 0)
+		Transmit_Char('0');
+	
+	while(data > 0)
 	{
 		buffer[count]=data%10;
 		data=data/10;

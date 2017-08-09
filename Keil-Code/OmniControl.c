@@ -17,6 +17,9 @@ float d_goal, fi, t_d;
 extern ultrasonic_t ult1,ult2;
 unsigned long timerCount = 0;
 
+char incomingByte;
+float Vx = 0, Vy = 0, Vang = 0;
+
 float maxFunc(float x, float y)
 {
 	return (x>y) ? x : y;
@@ -49,18 +52,66 @@ void Timer0_Task(void){Timer_Task(0);}
 void Timer1_Task(void){Timer_Task(1);}
 void Timer2_Task(void){Timer_Task(2);}
 
+// Use this timer for communication with Raspberry pi (Ubuntu ARM and ROS installed) 
+/*
+	* What kind of information can robot send to Raspberry pi?
+	- Ultrasonic sensor distances (x2)
+	- State of the robot (posX, posY, posTheta)
+	- Current pwm applied to motors (x3)
+	- Current speed of motors (x3)
+
+	* What kind of commands can robot receive from Raspberry pi?
+	- Speed set points (Vx, Vy, Vang)
+	- (Maybe) Direct pwm inputs - open loop
+	- (Maybe) Selection of open loop or closed loop
+*/
+/*
+	CURRENT PROTOCOL
+
+	* Robot sends
+	<Ultrasonic sensor data>  <State of the robot>
+	"u (dist1*1000) (dist2*1000) s (posX*1000) (posY*1000) (posTheta*1000) \r\n" 
+	
+	* Robot receives
+	<Speed set points>
+  "c (Vx)\r(Vy)\r(Vang)\r"  
+
+*/
 void Timer3_Task(void)	
 {
-	OmniControl_getData();
+	// Transmit the ultrasonic sensor data
+	Transmit_Char('u'); 
+	Transmit_Char(' ');
+	Transmit_Long(ult1.dist*1000);
+	Transmit_Char(' ');
+	Transmit_Long(ult2.dist*1000);
+	Transmit_Char(' ');
+	// Transmit state of the robot
+	Transmit_Char('s');
+	Transmit_Char(' ');
+	Transmit_Long(positionX*1000);
+	Transmit_Char(' ');
+	Transmit_Long(positionY*1000);
+	Transmit_Char(' ');
+	Transmit_Long(positionTheta*1000);
+	Transmit_Char(' ');
+	// Transmit a new line
+	Transmit_Char('\r');
+	Transmit_Char('\n');
+	
+	// Receive speed set points
+	incomingByte = Receive_Char();
+	incomingByte = Receive_Char();
+	Vx = Receive_Long() / 1000.0;
+	Vy = Receive_Long() / 1000.0;
+	Vang = Receive_Long() / 1000.0;
+	
+	// Send the control signals to robot
+	OmniControl(Vx, Vy, Vang, 0);
 }
 
 void Timer4_Task(void)	
-{/*
-	GoToGoal(d_goal, fi, t_d);	
-*/
-	
-	FollowWall(right);
-	
+{
 	/* Ultrasonic Distance Calculation */
 	if(timerCount%4 == 0)      // if 24 ms has passed (this timing is important for proper measurement)
 	{
@@ -98,7 +149,7 @@ void OmniControl_Init(void)
 	Timer0_Init(&Timer0_Task, 80000);      // timer period: 1ms
   Timer1_Init(&Timer1_Task, 80000);      // timer period: 1ms
 	Timer2_Init(&Timer2_Task, 80000);      // timer period: 1ms
-	Timer3_Init(&Timer3_Task, 80000);      // timer period: 1ms
+	Timer3_Init(&Timer3_Task, 80000*10);      // timer period: 10ms
 	Timer4_Init(&Timer4_Task, 6*80000);    // timer period: 6ms
 }
 
