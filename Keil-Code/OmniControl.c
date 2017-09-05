@@ -70,7 +70,7 @@ void Timer2_Task(void){Timer_Task(2);}
 
 	* Robot sends
 	<Ultrasonic sensor data>  <State of the robot>
-	"u (dist1*1000) (dist2*1000) s (posX*1000) (posY*1000) (posTheta*1000) \r\n" 
+	"u (dist1) (dist2) s (posX) (posY) (posTheta) \r\n" 
 	
 	* Robot receives
 	<Speed set points>
@@ -82,18 +82,18 @@ void Timer3_Task(void)
 	// Transmit the ultrasonic sensor data
 	Transmit_Char('u'); 
 	Transmit_Char(' ');
-	Transmit_Long(ult1.dist*1000);
+	Transmit_Float(ult1.dist);
 	Transmit_Char(' ');
-	Transmit_Long(ult2.dist*1000);
+	Transmit_Float(ult2.dist);
 	Transmit_Char(' ');
 	// Transmit state of the robot
 	Transmit_Char('s');
 	Transmit_Char(' ');
-	Transmit_Long(positionX*1000);
+	Transmit_Float(positionX);
 	Transmit_Char(' ');
-	Transmit_Long(positionY*1000);
+	Transmit_Float(positionY);
 	Transmit_Char(' ');
-	Transmit_Long(positionTheta*1000);
+	Transmit_Float(positionTheta);
 	Transmit_Char(' ');
 	// Transmit a new line
 	Transmit_Char('\r');
@@ -102,9 +102,9 @@ void Timer3_Task(void)
 	// Receive speed set points
 	incomingByte = Receive_Char();
 	incomingByte = Receive_Char();
-	Vx = Receive_Long() / 1000.0;
-	Vy = Receive_Long() / 1000.0;
-	Vang = Receive_Long() / 1000.0;
+	Vx = Receive_Float();
+	Vy = Receive_Float();
+	Vang = Receive_Float();
 	
 	// Send the control signals to robot
 	OmniControl(Vx, Vy, Vang, 0);

@@ -1,5 +1,6 @@
 #include "tm4c123gh6pm.h"  
 #include "UART.h"         
+#include "stdlib.h"
 
 /** @brief  Initialize UART4		
   * @input  None
@@ -88,3 +89,41 @@ unsigned long Receive_Long(void)
 	}
 	return number;
 }
+
+// Sends float numbers over UART
+void Transmit_Float(float number)
+{
+	unsigned char *ptr;
+	ptr = (unsigned char *) &number;
+	Transmit_Char(*ptr++);
+	Transmit_Char(*ptr++);
+	Transmit_Char(*ptr++);
+	Transmit_Char(*ptr);
+}
+
+// Receives float numbers over UART
+float Receive_Float(void)
+{
+	float number = 0;
+	char incomingData;
+	char incomingArray[100];
+	int i = 0, j;
+	
+	for (j = 0; j < 100; j++)
+		incomingArray[j] = 0;
+	
+	// get the incoming data in a char array
+	incomingData = Receive_Char();
+	while(incomingData != CR)   // accepts until /r is typed
+	{
+		incomingArray[i] = incomingData;
+		i++;
+		incomingData = Receive_Char();
+	}
+	
+	// convert char array to float
+	number = (float)atof(incomingArray);
+	
+	return number;
+}
+

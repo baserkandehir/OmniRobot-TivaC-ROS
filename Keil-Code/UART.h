@@ -44,4 +44,10 @@ void Transmit_Long(unsigned long data);
   */
 unsigned long Receive_Long(void);
 
+// Sends float numbers over UART
+void Transmit_Float(float number);
+
+// Receives float numbers over UART
+float Receive_Float(void);
+
 #endif /* UART_H */
